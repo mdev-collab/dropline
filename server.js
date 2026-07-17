@@ -157,7 +157,14 @@ app.get('/api/my-sessions', (req, res) => {
 });
 
 app.get('/api/sessions/:code/qr', requireSession, async (req, res) => {
-  const joinUrl = `http://${lanIP()}:${PORT}/#join=${req.params.code}`;
+  // Behind a hosted domain (Railway etc.) use the host the visitor came from;
+  // on localhost fall back to the LAN IP so phones on the same Wi-Fi can scan.
+  const proto = req.headers['x-forwarded-proto'] || 'http';
+  const host = req.headers.host || `localhost:${PORT}`;
+  const base = host.startsWith('localhost') || host.startsWith('127.')
+    ? `http://${lanIP()}:${PORT}`
+    : `${proto}://${host}`;
+  const joinUrl = `${base}/#join=${req.params.code}`;
   const dataUrl = await QRCode.toDataURL(joinUrl, { width: 480, margin: 2, color: { dark: '#0e1b16', light: '#ffffff' } });
   res.json({ joinUrl, dataUrl, code: req.params.code });
 });
