@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dropline — share between devices</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23198a68'/%3E%3Cpath d='M16 7v12m0 0-5-5m5 5 5-5M8 24h16' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- ============ sidebar ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <svg width="26" height="26" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="oklch(0.52 0.11 165)"/><path d="M16 7v12m0 0-5-5m5 5 5-5M8 24h16" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Dropline
+      </div>
+      <button class="icon-btn" id="rename-btn" title="Change your name" aria-label="Change your name">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+    </div>
+    <div class="search-wrap">
+      <input class="search" id="search" type="search" placeholder="Search sessions" autocomplete="off">
+    </div>
+    <nav class="session-list" id="session-list" aria-label="Your sessions"></nav>
+    <div class="sidebar-bottom">
+      <button class="btn btn-primary" id="new-session-btn">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        New session
+      </button>
+      <button class="btn btn-ghost" id="join-session-btn">Join with code</button>
+    </div>
+  </aside>
+
+  <!-- ============ main ============ -->
+  <main class="main" id="main">
+    <div class="drop-overlay" id="drop-overlay">Drop files to share</div>
+
+    <div class="welcome" id="welcome">
+      <div class="welcome-inner">
+        <svg class="welcome-logo" width="64" height="64" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="oklch(0.52 0.11 165)"/><path d="M16 7v12m0 0-5-5m5 5 5-5M8 24h16" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h1>Share anything between your devices</h1>
+        <p>Create a session, then open it on your phone with a code or QR scan — or invite a friend. Files, links and messages flow instantly, just like a chat.</p>
+        <div class="welcome-actions">
+          <button class="btn btn-primary" id="welcome-new">Create a session</button>
+          <button class="btn btn-ghost" id="welcome-join">Join with code</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="chat" id="chat" aria-label="Chat">
+      <header class="chat-header">
+        <button class="icon-btn back-btn" id="back-btn" aria-label="Back to sessions">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="chat-title">
+          <h2 id="chat-name"></h2>
+          <div class="chat-sub" id="chat-sub"></div>
+        </div>
+        <button class="code-chip" id="code-chip" title="Copy session code">
+          <span id="code-chip-text"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="icon-btn" id="invite-btn" title="Invite — QR & code" aria-label="Invite with QR code">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v.01M14 21v.01M17.5 17.5h.01M21 21h.01"/></svg>
+        </button>
+        <button class="icon-btn" id="leave-btn" title="Leave session" aria-label="Leave session">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </header>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="composer">
+        <div class="composer-box">
+          <textarea id="input" rows="1" placeholder="Message, link, or paste a file…" aria-label="Message"></textarea>
+          <button class="icon-btn attach-btn" id="attach-btn" title="Attach files" aria-label="Attach files">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l8.57-8.57a4 4 0 1 1 5.66 5.66l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+        </div>
+        <button class="send-btn" id="send-btn" aria-label="Send">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        </button>
+      </div>
+      <div class="upload-bar" id="upload-bar"></div>
+    </section>
+  </main>
+</div>
+
+<input type="file" id="file-input" multiple hidden>
+
+<!-- ============ dialogs ============ -->
+<dialog id="name-dialog">
+  <h3>What should we call you?</h3>
+  <p class="sub">Shown next to your messages so devices and friends can tell who's who.</p>
+  <form method="dialog" id="name-form">
+    <div class="field"><input id="name-input" maxlength="40" placeholder="e.g. Java's PC" required autocomplete="off"></div>
+    <p class="dialog-error" id="name-error"></p>
+    <div class="dialog-actions"><button class="btn btn-primary" type="submit">Continue</button></div>
+  </form>
+</dialog>
+
+<dialog id="create-dialog">
+  <h3>New session</h3>
+  <p class="sub">You'll get a code and QR to open it on any other device.</p>
+  <form method="dialog" id="create-form">
+    <div class="field">
+      <label for="create-name">Session name</label>
+      <input id="create-name" maxlength="60" placeholder="e.g. PC ↔ Phone" autocomplete="off">
+    </div>
+    <p class="dialog-error" id="create-error"></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="submit">Create</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="join-dialog">
+  <h3>Join a session</h3>
+  <p class="sub">Enter the 6-digit code from the other device.</p>
+  <form method="dialog" id="join-form">
+    <div class="field"><input class="code-input" id="join-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off" required></div>
+    <p class="dialog-error" id="join-error"></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="submit">Join</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="invite-dialog">
+  <h3>Invite a device or friend</h3>
+  <p class="sub">Scan the QR from a phone on the same Wi-Fi, or type the code in "Join with code".</p>
+  <div class="qr-wrap"><img id="qr-img" alt="QR code to join this session" width="230" height="230"></div>
+  <div class="big-code" id="invite-code"></div>
+  <p class="join-url" id="invite-url"></p>
+  <div class="dialog-actions">
+    <button class="btn btn-ghost" id="copy-link-btn" type="button">Copy link</button>
+    <button class="btn btn-primary" type="button" data-close>Done</button>
+  </div>
+</dialog>
+
+<dialog id="lightbox" class="lightbox"><img id="lightbox-img" alt=""></dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

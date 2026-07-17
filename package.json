@@ -1,0 +1,15 @@
+{
+  "name": "dropline",
+  "version": "1.0.0",
+  "description": "Telegram-style web app for sharing files, links and messages between devices via session codes and QR",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "qrcode": "^1.5.4",
+    "ws": "^8.18.0"
+  }
+}
